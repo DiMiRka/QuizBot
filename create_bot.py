@@ -7,3 +7,4 @@ logger = logging.getLogger(__name__)
 
 bot = Bot(token=config('TOKEN'))
 dp = Dispatcher()
+

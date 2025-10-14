@@ -16,6 +16,7 @@ async def new_quiz(message):
 
 async def get_question(message, user_id):
     current_question_index = await get_quiz_index(user_id)
+    print(current_question_index)
     correct_index = quiz_data[current_question_index]['correct_option']
     opts = quiz_data[current_question_index]['options']
 
