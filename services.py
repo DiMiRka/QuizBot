@@ -1,3 +1,6 @@
+from db import update_quiz_index, get_quiz_index
+from utils import quiz_data
+from keyboards import quiz_keyboard
 
 
 async def new_quiz(message):
@@ -12,6 +15,6 @@ async def get_question(message, user_id):
     correct_index = quiz_data[current_question_index]['correct_option']
     opts = quiz_data[current_question_index]['options']
 
-    kb = generate_options_keyboard(opts, opts[correct_index])
+    kb = quiz_keyboard(opts, opts[correct_index])
 
     await message.answer(f"{quiz_data[current_question_index]['question']}", reply_markup=kb)
