@@ -16,7 +16,6 @@ async def update_quiz_index(user_id, index):
                          ON CONFLICT(user_id) DO UPDATE SET question_index=excluded.question_index''',
                          (int(user_id), index))
         await db.commit()
-        print(f"Updated user {user_id} to question_index {index}")
 
 
 async def get_quiz_index(user_id):
@@ -24,9 +23,7 @@ async def get_quiz_index(user_id):
         async with db.execute('SELECT question_index FROM quiz_state WHERE user_id = ?', (int(user_id),)) as cursor:
             results = await cursor.fetchone()
             if results is None or results[0] is None:
-                print(f"User {user_id} has no entry yet. Returning 0")
                 return 0
-            print(f"User {user_id} question_index {results[0]}")
             return results[0]
 
 
@@ -70,3 +67,12 @@ async def get_static():
             result = await cursor.fetchall()
             print(result)
             return sorted(result, key=lambda x: x[1], reverse=True)
+
+
+async def get_quiz_result(user_id):
+    async with aiosqlite.connect(config('DB_NAME')) as db:
+        async with db.execute('SELECT right_answers, wrong_answers FROM quiz_state WHERE user_id = (?)', (user_id,)) as cursor:
+            result = await cursor.fetchone()
+            print(result)
+            text = f"{result[0]}/{result[0]+result[1]}"
+            return text

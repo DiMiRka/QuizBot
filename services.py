@@ -16,10 +16,21 @@ async def new_quiz(message):
 
 async def get_question(message, user_id):
     current_question_index = await get_quiz_index(user_id)
-    print(current_question_index)
     correct_index = quiz_data[current_question_index]['correct_option']
     opts = quiz_data[current_question_index]['options']
 
     kb = quiz_keyboard(opts, opts[correct_index])
 
     await message.answer(f"{quiz_data[current_question_index]['question']}", reply_markup=kb)
+
+
+async def get_answer(message, call):
+    markup = message.reply_markup
+    answer = str()
+
+    for row in markup.inline_keyboard:
+        for button in row:
+            if button.callback_data == call:
+                answer = button.text
+
+    return answer
