@@ -1,5 +1,5 @@
 from aiogram import F
-from aiogram.filters.command import Command
+from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery
 
 from create_bot import dp

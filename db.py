@@ -4,7 +4,7 @@ from decouple import config
 
 async def create_table():
     async with aiosqlite.connect(config('DB_NAME')) as db:
-        await db.execute('''CREATE TABLE IF NOT EXISTS quiz_state 
+        await db.execute('''CREATE TABLE IF NOT EXISTS quiz_bot  
                             (user_id INTEGER PRIMARY KEY, question_index INTEGER,
                             right_answers INTEGER, wrong_answers INTEGER)''')
         await db.commit()
