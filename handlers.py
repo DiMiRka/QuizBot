@@ -23,7 +23,7 @@ async def users_stats(call: CallbackQuery):
 
     text = "Статистика игроков:\n"
     for user in static:
-        text += f'\n{user["user_id"]}: {str(user[1])}/{str(user[1]+user[2])}'
+        text += f'\n{user[0]} результат {str(user[1])}/{str(user[1]+user[2])}'
 
     await call.message.answer(text)
 
@@ -32,7 +32,7 @@ async def users_stats(call: CallbackQuery):
 @router.callback_query(F.data == "начать викторину")
 async def cmd_quiz(call: CallbackQuery):
     await call.message.answer(f"Давайте начнем квиз!")
-    await new_quiz(call.message)
+    await new_quiz(call)
 
 
 @router.callback_query(F.data == "right_answer")
@@ -44,20 +44,20 @@ async def right_answer(call: CallbackQuery):
     )
 
     current_last_answer = await get_answer(call.message, call.data)
-    current_question_index = await get_quiz_index(call.message.from_user.id)
-    current_right_answers = await get_right_answers(call.message.from_user.id)
+    current_question_index = await get_quiz_index(call.from_user.id)
+    current_right_answers = await get_right_answers(call.from_user.id)
     await call.message.answer(f'Ответ "{current_last_answer}"\nВерный ✅!')
 
     current_question_index += 1
-    await update_quiz_index(call.message.from_user.id, current_question_index)
+    await update_quiz_index(call.from_user.id, current_question_index)
 
     current_right_answers += 1
-    await update_right_answers(call.message.from_user.id, current_right_answers)
+    await update_right_answers(call.from_user.id, current_right_answers)
 
     if current_question_index < len(quiz_data):
-        await get_question(call.message, call.message.from_user.id)
+        await get_question(call.message, call.from_user.id)
     else:
-        result = await get_quiz_result(call.message.from_user.id)
+        result = await get_quiz_result(call.from_user.id)
         await call.message.answer("Это был последний вопрос. Квиз завершен!")
         await call.message.answer(f"Твой результат {result}")
 
@@ -71,20 +71,20 @@ async def wrong_answer(call: CallbackQuery):
     )
 
     current_last_answer = await get_answer(call.message, call.data)
-    current_question_index = await get_quiz_index(call.message.from_user.id)
-    current_wrong_answers = await get_wrong_answers(call.message.from_user.id)
+    current_question_index = await get_quiz_index(call.from_user.id)
+    current_wrong_answers = await get_wrong_answers(call.from_user.id)
     correct_option = quiz_data[current_question_index]['correct_option']
     await call.message.answer(f'Ответ "{current_last_answer}" Неправильный❌.\nПравильный ответ: {quiz_data[current_question_index]['options'][correct_option]}')
 
     current_question_index += 1
-    await update_quiz_index(call.message.from_user.id, current_question_index)
+    await update_quiz_index(call.from_user.id, current_question_index)
 
     current_wrong_answers += 1
-    await update_wrong_answers(call.message.from_user.id, current_wrong_answers)
+    await update_wrong_answers(call.from_user.id, current_wrong_answers)
 
     if current_question_index < len(quiz_data):
-        await get_question(call.message, call.message.from_user.id)
+        await get_question(call.message, call.from_user.id)
     else:
-        result = await get_quiz_result(call.message.from_user.id)
+        result = await get_quiz_result(call.from_user.id)
         await call.message.answer("Это был последний вопрос. Квиз завершен!")
         await call.message.answer(f"Твой результат {result}")

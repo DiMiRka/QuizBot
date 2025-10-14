@@ -5,8 +5,14 @@ from decouple import config
 async def create_table():
     async with aiosqlite.connect(config('DB_NAME')) as db:
         await db.execute('''CREATE TABLE IF NOT EXISTS quiz_state  
-                            (user_id INTEGER PRIMARY KEY, question_index INTEGER NOT NULL DEFAULT 0,
+                            (user_id INTEGER PRIMARY KEY, user_name VARCHAR, question_index INTEGER NOT NULL DEFAULT 0,
                             right_answers INTEGER, wrong_answers INTEGER)''')
+        await db.commit()
+
+
+async def update_user_name(user_id, user_name):
+    async with aiosqlite.connect(config('DB_NAME')) as db:
+        await db.execute('UPDATE quiz_state SET user_name = ? WHERE user_id = ?', (user_name, user_id))
         await db.commit()
 
 
@@ -63,7 +69,7 @@ async def get_wrong_answers(user_id):
 
 async def get_static():
     async with aiosqlite.connect(config('DB_NAME')) as db:
-        async with db.execute('SELECT user_id, right_answers, wrong_answers FROM quiz_state') as cursor:
+        async with db.execute('SELECT user_name, right_answers, wrong_answers FROM quiz_state') as cursor:
             result = await cursor.fetchall()
             print(result)
             return sorted(result, key=lambda x: x[1], reverse=True)
