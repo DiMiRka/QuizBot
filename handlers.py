@@ -17,22 +17,33 @@ async def cmd_start(message: Message):
 
 
 @router.message(Command("static"))
-@router.callback_query(F.data == "статистика игроков")
-async def users_stats(call: CallbackQuery):
+async def users_stats_command(message: Message):
     static = await get_static()
+    await message.answer(static)
 
-    text = "Статистика игроков:\n"
-    for user in static:
-        text += f'\n{user[0]} результат {str(user[1])}/{str(user[1]+user[2])}'
 
-    await call.message.answer(text)
+@router.callback_query(F.data == "статистика игроков")
+async def users_stats_button(call: CallbackQuery):
+    static = await get_static()
+    await call.message.answer(static)
 
 
 @router.message(Command("quiz"))
+async def start_quiz_command(message: Message):
+    user_id = message.from_user.id
+    user_name = message.from_user.username
+    print(user_id, user_name)
+    await message.answer(f"Давайте начнем квиз!")
+    await new_quiz(message, user_id, user_name)
+
+
 @router.callback_query(F.data == "начать викторину")
-async def cmd_quiz(call: CallbackQuery):
+async def start_quiz_button(call: CallbackQuery):
+    user_id = call.from_user.id
+    user_name = call.from_user.username
+    print(user_id, user_name)
     await call.message.answer(f"Давайте начнем квиз!")
-    await new_quiz(call)
+    await new_quiz(call.message, user_id, user_name)
 
 
 @router.callback_query(F.data == "right_answer")

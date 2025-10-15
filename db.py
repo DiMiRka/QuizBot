@@ -71,8 +71,13 @@ async def get_static():
     async with aiosqlite.connect(config('DB_NAME')) as db:
         async with db.execute('SELECT user_name, right_answers, wrong_answers FROM quiz_state') as cursor:
             result = await cursor.fetchall()
-            print(result)
-            return sorted(result, key=lambda x: x[1], reverse=True)
+            result = sorted(result, key=lambda x: x[1], reverse=True)
+
+            text = "Статистика игроков:\n"
+            for row in result:
+                text += f'\n{row[0]} результат {str(row[1])}/{str(row[1] + row[2])}'
+
+            return text
 
 
 async def get_quiz_result(user_id):
